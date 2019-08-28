@@ -21,7 +21,7 @@ def parse(locality,checkin_date,checkout_date,sort):
 
     #add multiple urls below to get a larger list of HOTELS see url:
     #https://www.tripadvisor.com/Hotels-g45963-Las_Vegas_Nevada-Hotels.html
-    #https://www.tripadvisor.com/Hotels-g45963-oa30-Las_Vegas_Nevada-Hotels.html
+    #https://www.tripadvisor.com/Hotels-g45963-oa30-Las_Vegas_Nevada-Hotels.html - ths is page 2
 
     url_from_autocomplete = "http://www.tripadvisor.com"+api_response['results'][0]['url']
     print ('URL found %s'%url_from_autocomplete)
