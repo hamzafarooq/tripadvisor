@@ -1,0 +1,4 @@
+,hotel_name,url,locality,reviews,tripadvisor_rating,checkIn,checkOut,price_per_night,booking_provider,no_of_deals,hotel_features
+0,Heaven's Rest B&B,http://www.tripadvisor.com/Hotel_Review-g1307701-d14942500-Reviews-Heaven_s_Rest_B_B-Bombay_North_Island.html,Bombay,7 ,,2019/10/01,2019/10/05,,TripAdvisor,11,
+1,Green Hill Farm Stay,http://www.tripadvisor.com/Hotel_Review-g1307701-d17632337-Reviews-Green_Hill_Farm_Stay-Bombay_North_Island.html,Bombay,0 ,,2019/10/01,2019/10/05,,Booking.com,0,
+2,Petshari Lodge,http://www.tripadvisor.com/Hotel_Review-g1307701-d5482799-Reviews-Petshari_Lodge-Bombay_North_Island.html,Bombay,17 ,,2019/10/01,2019/10/05,,,0,
