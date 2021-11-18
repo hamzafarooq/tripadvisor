@@ -42,14 +42,17 @@ def post_soup(session, url, params, show=False):
 def scrape(url, lang='ALL'):
 
     # create session to keep all cookies (etc.) between requests
-    session = requests.Session()
+    header = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
+    }
+    session = requests.Session(headers=header)
 
-    session.headers.update({
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36',
-    })
+    # session.headers.update({
+    #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
+    # })
 
 
-    items = parse(session, url + '?filterLang=' + lang)
+    items = parse(session, url )
 
     return items
 
@@ -76,12 +79,14 @@ def parse(session, url):
     items = []
 
     offset = 0
+
 #https://www.tripadvisor.com/Hotel_Review-g187497-d289670-Reviews-Gran_Hotel_Torre_Catalunya-Barcelona_Catalonia.html#REVIEWS
 #https://www.tripadvisor.com/Hotel_Review-g187497-d289670-Reviews-or5-Gran_Hotel_Torre_Catalunya-Barcelona_Catalonia.html#REVIEWS
 #https://www.tripadvisor.com/Hotel_Review-g187497-d289670-Reviews-or10-Gran_Hotel_Torre_Catalunya-Barcelona_Catalonia.html#REVIEWS
 #https://www.tripadvisor.com/Hotel_Review-g187497-d289670-Reviews-or15-Gran_Hotel_Torre_Catalunya-Barcelona_Catalonia.html#REVIEWS
 
-    while(offset < 90):
+    while(offset < 5):
+        print("offset"+offset)
         subpage_url = url_template.format(offset)
 
         subpage_items = parse_reviews(session, subpage_url)
@@ -198,5 +203,3 @@ def write_in_csv(items, filename='results.csv',
             csv_file.writeheader()
 
         csv_file.writerows(items)
-
-

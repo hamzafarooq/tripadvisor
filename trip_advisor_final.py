@@ -15,8 +15,12 @@ def parse(locality,checkin_date,checkout_date,sort):
     print ("Scraper Inititated for Locality:%s"%locality)
     # TA rendering the autocomplete list using this API
     print ("Finding search result page URL")
+    header = {
+
+                            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
+            }
     geo_url = 'https://www.tripadvisor.com/TypeAheadJson?action=API&startTime='+str(int(time()))+'&uiOrigin=GEOSCOPE&source=GEOSCOPE&interleaved=true&types=geo,theme_park&neighborhood_geos=true&link_type=hotel&details=true&max=12&injectNeighborhoods=true&query='+locality
-    api_response  = requests.get(geo_url, verify=False).json()
+    api_response  = requests.get(geo_url,headers=header, timeout=120).json()
     #getting the TA url for th equery from the autocomplete response
 
     #add multiple urls below to get a larger list of HOTELS see url:
@@ -57,12 +61,11 @@ def parse(locality,checkin_date,checkout_date,sort):
                                 'Host': 'www.tripadvisor.com',
                                 'Pragma': 'no-cache',
                                 'Referer': url_from_autocomplete,
-                                'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0',
-                                'X-Requested-With': 'XMLHttpRequest'
+                                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
                             }
         cookies=  {"SetCurrency":"USD"}
         print ("Downloading search results page")
-        page_response  = requests.post(url = url_from_autocomplete,data=form_data,headers = headers, cookies = cookies, verify=False)
+        page_response  = requests.post(url = url_from_autocomplete,data=form_data,headers = headers, cookies = cookies, timeout=120)
         print ("Parsing results ")
         parser = html.fromstring(page_response.text)
         hotel_lists = parser.xpath('//div[contains(@class,"listItem")]//div[contains(@class,"listing collapsed")]')
@@ -91,7 +94,7 @@ def parse(locality,checkin_date,checkout_date,sort):
             raw_hotel_features = hotel.xpath(XPATH_HOTEL_FEATURES)
             raw_hotel_price_per_night  = hotel.xpath(XPATH_HOTEL_PRICE)
 
-            url = 'http://www.tripadvisor.com'+raw_hotel_link[0] if raw_hotel_link else  None
+            url = 'https://www.tripadvisor.com'+raw_hotel_link[0] if raw_hotel_link else  None
             reviews = ''.join(raw_no_of_reviews).replace("reviews","").replace(",","") if raw_no_of_reviews else 0
             rank = ''.join(raw_rank) if raw_rank else None
             rating = ''.join(raw_rating).replace('of 5 bubbles','').strip() if raw_rating else None
@@ -125,7 +128,7 @@ def parse(locality,checkin_date,checkout_date,sort):
             hotel_data.append(data)
             all_hotel.append(data)
     #Referrer is necessary to get the correct response from TA if not provided they will redirect to home page
-
+    #print(all_hotel)
     return all_hotel
 
 if __name__ == '__main__':
