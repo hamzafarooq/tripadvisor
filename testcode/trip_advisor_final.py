@@ -2,7 +2,7 @@
 from datetime import datetime
 from time import time
 from lxml import html,etree
-from reviews_final import scrape, write_in_csv
+from review_v2 import scrape, write_in_csv
 import pandas as pd
 import requests,re
 import os,sys
@@ -60,8 +60,8 @@ def parse(locality,checkin_date,checkout_date,sort):
                                 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
                                 'Host': 'www.tripadvisor.com',
                                 'Pragma': 'no-cache',
-                                'Referer': url_from_autocomplete,
-                                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
+                                'Referer': url_from_autocomplete,     
+                                 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0',
                             }
         cookies=  {"SetCurrency":"USD"}
         print ("Downloading search results page")

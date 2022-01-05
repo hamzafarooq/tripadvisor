@@ -1,10 +1,4 @@
 
-
-#coding: utf-8
-
-# In[ ]:
-
-
 import requests
 from bs4 import BeautifulSoup
 import csv
@@ -39,26 +33,24 @@ def post_soup(session, url, params, show=False):
     else:
         return BeautifulSoup(r.text, 'html.parser')
 
-def scrape(url, lang='ALL'):
+def scrape(url, lang='en'):
 
     # create session to keep all cookies (etc.) between requests
-    header = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
-    }
-    session = requests.Session(headers=header)
+    session = requests.Session()
 
-    # session.headers.update({
-    #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
-    # })
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36',
+    })
 
+
+    items = parse(session, url)
 
     items = parse(session, url )
+    print(f'we scraped {items}')
 
     return items
 
 def parse(session, url):
-    print('Get number of reviews and start getting subpages with reviews')
-
     print('[parse] url:', url)
 
     soup = get_soup(session, url)
@@ -67,35 +59,29 @@ def parse(session, url):
         print('[parse] no soup:', url)
         return
 
-    #num_reviews = soup.find('span', class_='reviews_header_count').text # get text
-    #num_reviews = num_reviews[1:-1]
-    #num_reviews = num_reviews.replace(',', '')
-    #num_reviews = int(num_reviews) # convert text into integer
-    #print('[parse] num_reviews ALL:', num_reviews)
+    # num_reviews = soup.find('span', class_='reviews_header_count').text # get text
+    # num_reviews = num_reviews[1:-1] 
+    # num_reviews = num_reviews.replace(',', '')
+    # num_reviews = int(num_reviews) # convert text into integer
+    # print('[parse] num_reviews ALL:', num_reviews)
 
-    url_template = url.replace('Reviews-', 'Reviews-or{}-')
+    url_template = url.replace('.html', '-or{}.html')
     print('[parse] url_template:', url_template)
 
     items = []
 
     offset = 0
 
-#https://www.tripadvisor.com/Hotel_Review-g187497-d289670-Reviews-Gran_Hotel_Torre_Catalunya-Barcelona_Catalonia.html#REVIEWS
-#https://www.tripadvisor.com/Hotel_Review-g187497-d289670-Reviews-or5-Gran_Hotel_Torre_Catalunya-Barcelona_Catalonia.html#REVIEWS
-#https://www.tripadvisor.com/Hotel_Review-g187497-d289670-Reviews-or10-Gran_Hotel_Torre_Catalunya-Barcelona_Catalonia.html#REVIEWS
-#https://www.tripadvisor.com/Hotel_Review-g187497-d289670-Reviews-or15-Gran_Hotel_Torre_Catalunya-Barcelona_Catalonia.html#REVIEWS
-
-    while(offset < 5):
-        print("offset"+offset)
+    while(True):  #used to control the flow
         subpage_url = url_template.format(offset)
-
+        
         subpage_items = parse_reviews(session, subpage_url)
         if not subpage_items:
             break
-
+  
         items += subpage_items
 
-        if len(subpage_items) < 3:
+        if len(subpage_items) < 5:
             break
 
         offset += 5
@@ -145,38 +131,37 @@ def parse_reviews(session, url):
     if not reviews_ids:
         return
 
-    soup = get_more(session, reviews_ids)
+    # soup = get_more(session, reviews_ids)
 
-    if not soup:
-        print('[parse_reviews] no soup:', url)
-        return
+    # if not soup:
+    #     print('[parse_reviews] no soup:', url)
+    #     return
 
     items = []
 
-    for idx, review in enumerate(soup.find_all('div', class_='reviewSelector')):
+    for idx, review in enumerate(soup.find_all('q')):
+        # badgets = review.find_all('span', class_='badgetext')
+        # if len(badgets) > 0:
+        #     contributions = badgets[0].text
+        # else:
+        #     contributions = '0'
 
-        badgets = review.find_all('span', class_='badgetext')
-        if len(badgets) > 0:
-            contributions = badgets[0].text
-        else:
-            contributions = '0'
+        # if len(badgets) > 1:
+        #     helpful_vote = badgets[1].text
+        # else:
+        #     helpful_vote = '0'
+        # user_loc = review.select_one('div.userLoc strong')
+        # if user_loc:
+        #     user_loc = user_loc.text
+        # else:
+        #     user_loc = ''
 
-        if len(badgets) > 1:
-            helpful_vote = badgets[1].text
-        else:
-            helpful_vote = '0'
-        user_loc = review.select_one('div.userLoc strong')
-        if user_loc:
-            user_loc = user_loc.text
-        else:
-            user_loc = ''
-
-        bubble_rating = review.select_one('span.ui_bubble_rating')['class']
-        bubble_rating = bubble_rating[1].split('_')[-1]
+        # bubble_rating = review.select_one('span.ui_bubble_rating')['class']
+        # bubble_rating = bubble_rating[1].split('_')[-1]
 
         item = {
-            'review_body': review.find('p', class_='partial_entry').text,
-            'review_date': review.find('span', class_='ratingDate')['title'], # 'ratingDate' instead of 'relativeDate'
+             'review_body': review.span.text.strip(),
+            'review_date': 'None', # 'ratingDate' instead of 'relativeDate'
         }
 
         items.append(item)
